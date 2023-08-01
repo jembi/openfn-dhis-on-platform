@@ -1,0 +1,28 @@
+---
+projectName: Openfn-DHIS2-on-platform
+image: jembi/platform:2.4.0
+logPath: /tmp/logs
+
+packages:
+  - openfn-dhis-on-platform
+  - reverse-proxy-nginx
+
+customPackages:
+  - id: openfn-dhis-on-platform
+    path: ../openfn-dhis-on-platform
+
+profiles:
+  - name: local
+    packages:
+      - openfn-dhis-on-platform
+    envFiles:
+      - ./.env.local
+    dev: true
+
+  - name: qa
+    packages:
+      - openfn-dhis-on-platform
+      - reverse-proxy-nginx
+    envFiles:
+      - ./.env.qa
+    dev: false

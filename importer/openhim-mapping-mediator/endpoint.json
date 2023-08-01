@@ -1,0 +1,28 @@
+{
+  "name": "Openfn mediator",
+  "endpoint": {
+    "method": "POST",
+    "pattern": "/openfn"
+  },
+  "transformation": {
+    "input": "JSON",
+    "output": "JSON"
+  },
+  "kafkaConsumerTopic": "2xx",
+  "inputMapping": {},
+  "requests": {
+    "response": [
+      {
+        "id": "openfn",
+        "primary": true,
+        "config": {
+          "method": "POST",
+          "url": "http://openfn:4002",
+          "headers": {
+            "Content-Type": "application/json"
+          }
+        }
+      }
+    ]
+  }
+}
