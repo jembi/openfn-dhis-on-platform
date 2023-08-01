@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  mapping-mediator-config-importer:
+    image: jembi/instantohie-config-importer
+    deploy:
+      restart_policy:
+        condition: none
+    environment:
+    configs:
+      - source: mapping-mediator-metadata.js
+        target: /metadata.js
+      - source: mapping-mediator-endpoint.json
+        target: /endpoint.json
+    networks:
+      mapping-mediator:
+    # This command will only attempt to import the OpenHIM config when the heartbeat responds with a 2xx
+    command: sh -c "wait-on -t 60000 http-get://validator-orchestrator:3003/uptime && node -e 'require(\"./metadata.js\").importMetaData()'"
+
+configs:
+  mapping-mediator-metadata.js:
+    file: ./metadata.js
+    name: mapping-mediator-metadata.js-${mapping_mediator_metadata_js_DIGEST:?err}
+    labels:
+      name: openfn-dhis
+  mapping-mediator-endpoint.json:
+    file: ./endpoint.json
+    name: mapping-mediator-endpoint.json-${mapping_mediator_endpoint_json_DIGEST:?err}
+    labels:
+      name: openfn-dhis
+
+networks:
+  mapping-mediator:
+    name: openhim_mapping_mediator_public
+    external: true

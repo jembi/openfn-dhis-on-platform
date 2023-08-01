@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  dhis2-config-importer:
+    image: jembi/instantohie-config-importer
+    deploy:
+      restart_policy:
+        condition: none
+    configs:
+      - source: dhis-config-metadata.js
+        target: /metadata.js
+      - source: dhis-config-metadata.json.gz
+        target: /metadata.json.gz
+    networks:
+      dhis:
+    # This command will only attempt to import the OpenHIM config when the heartbeat responds with a 2xx
+    command: sh -c "wait-on -t 60000 http-get://dashboard-visualizer-dhis2:8080 && node -e 'require(\"./metadata.js\").importMetaData()'"
+
+configs:
+  dhis-config-metadata.js:
+    file: ./metadata.js
+    name: dhis-config-metadata.js-${dhis_config_metadata_js_DIGEST:?err}
+    labels:
+      name: openfn-dhis
+  dhis-config-metadata.json.gz:
+    file: ./metadata.json.gz
+    name: dhis-config-metadata.json.gz-${dhis_config_metadata_json_gz_DIGEST:?err}
+    labels:
+      name: openfn-dhis
+
+networks:
+  dhis:
+    name: dhis2-public
+    external: true
